@@ -25,6 +25,18 @@ module.exports = (app)=>{
     })
 
     routes.post((req,res)=>{
+        req.assert("nome","Prescisa preencer os campos").notEmpty()
+        req.assert("email","Email inválido").notEmpty().isEmail()
+        req.assert("senha","Senha nao preenchida").notEmpty()
+
+        const errors = req.validationErrors()
+
+        if(errors){
+
+            app.utils.error.send(errors,req,res)
+            return false
+
+        }
 
         db.insert(req.body,(err,use)=>{
 
@@ -34,7 +46,7 @@ module.exports = (app)=>{
 
             }else{
 
-                res.json(use)
+                res.json({...use, senha: ''})
             }
         })
     })
